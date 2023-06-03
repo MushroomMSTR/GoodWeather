@@ -6,19 +6,20 @@
 //
 
 import Foundation
+import Combine
 
 class WeatherViewModel: ObservableObject {
-	private var weatherService: WeatherService
+	private var weatherService: WeatherService!
 	
 	@Published var weather = Weather()
 	
-	init(weatherService: WeatherService) {
-		self.weatherService = weatherService
+	init() {
+		self.weatherService = WeatherService()
 	}
 	
 	var temperature: String {
 		if let temp = self.weather.temp {
-			return String(format: "%.0f", temp)
+			return String(format: "%.0f °C",temp)
 		} else {
 			return ""
 		}
@@ -45,9 +46,11 @@ class WeatherViewModel: ObservableObject {
 		
 		self.weatherService.getWeather(city: city) { weather in
 			if let weather = weather {
-				self.weather = weather
+				DispatchQueue.main.async {
+					self.weather = weather
+				}
 			}
 		}
+		
 	}
-	
 }
